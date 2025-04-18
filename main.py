@@ -1,25 +1,67 @@
 #Créer un fichier texte avec vote clé api. plus d'infos sur rapidapi.com
 import requests
 import pandas
+import time
+from colorama import init, Fore, Style
 
-url = "https://coinranking1.p.rapidapi.com/coins"
+# Initialisation de colorama
+init(autoreset=True)
 
-querystring = {"referenceCurrencyUuid":"yhjMzLPhuIDl","timePeriod":"24h","tiers":"1","orderBy":"marketCap","orderDirection":"desc","limit":"60","offset":"0"}
+# Fonction pour afficher un message avec animation et couleur
+def afficher_message(message, couleur=Fore.CYAN, delay=0.02):
+    for char in message:
+        print(couleur + char,flush=True,end='')
+        time.sleep(delay)
+    print()  # saut de ligne à la fin
 
-with open("api.txt") as file:
-	api = file.read().strip()
+afficher_message("Démarrage du script de récupération des données cryptomonnaies...", Fore.GREEN)
 
-headers = {
-	"x-rapidapi-key": api,
-	"x-rapidapi-host": "coinranking1.p.rapidapi.com"
-}
-#Requète pour se connecter au serveur
-response = requests.get(url, headers=headers, params=querystring)
+def Extract(url):
+	
+	try :
+		with open("api.txt") as file:
+			api = file.read().strip()
+	except Exception as e:
+		afficher_message("La clé api n'as pas pu etre récupérer...", Fore.RED)
+		afficher_message(e)
+		
+	querystring = {"referenceCurrencyUuid":"yhjMzLPhuIDl","timePeriod":"24h","tiers":"1","orderBy":"marketCap","orderDirection":"desc","limit":"60","offset":"0"}
+	headers = {
+		"x-rapidapi-key": api,
+		"x-rapidapi-host": "coinranking1.p.rapidapi.com"
+	}
+	try :
+		#Requète pour se connecter au serveur
+		response = requests.get(url, headers=headers, params=querystring)
+	except Exception as e:
+		afficher_message("Connexion vers le serveur echoué...", Fore.RED)
+		afficher_message(e)
+		
+	afficher_message("Récupération des données depuis l'api ok!", Fore.YELLOW)
+	return response
 
-#Créer le Dataframe a partir de la réponse json
-data = response.json()
-coins = data['data']['coins']
-df = pandas.DataFrame(coins)
+def Transform(response):
+	#Créer le Dataframe a partir de la réponse json
+	data = response.json()
+	coins = data['data']['coins']
+	df = pandas.DataFrame(coins)
 
-#Sauvegarder le résultat dans un fichier csv
-df.to_csv('crypto_coins.csv')
+	colonnes = ["symbol","name","marketCap","price"]
+	df_mod = df[colonnes]
+	afficher_message("Transformation des données Ok!", Fore.YELLOW)
+	return df_mod
+	
+def Load(df_arg):
+	#Sauvegarder le résultat dans un fichier csv
+	df_arg.to_csv('crypto_coins.csv')
+	afficher_message("Chargement des données ok dans le fichier CSV!", Fore.YELLOW)
+
+def main(url):
+	data = Extract(url)
+	data_frame = Transform(data)
+	Load(data_frame)
+	
+if __name__ == "__main__ " :
+	url = "https://coinranking1.p.rapidapi.com/coins"
+	main(url)
+	afficher_message("Fin du programme...", Fore.GREEN)
