@@ -14,9 +14,9 @@ def afficher_message(message, couleur=Fore.CYAN, delay=0.02):
         time.sleep(delay)
     print()  # saut de ligne à la fin
 
-afficher_message("Démarrage du script de récupération des données cryptomonnaies...", Fore.GREEN)
 
-def Extract(url):
+
+def Extract(url,Fore):
 	
 	try :
 		with open("api.txt") as file:
@@ -37,10 +37,10 @@ def Extract(url):
 		afficher_message("Connexion vers le serveur echoué...", Fore.RED)
 		afficher_message(e)
 		
-	afficher_message("Récupération des données depuis l'api ok!", Fore.YELLOW)
+	afficher_message("Récupération des données depuis l'api ok!")
 	return response
 
-def Transform(response):
+def Transform(response,Fore):
 	#Créer le Dataframe a partir de la réponse json
 	data = response.json()
 	coins = data['data']['coins']
@@ -48,20 +48,21 @@ def Transform(response):
 
 	colonnes = ["symbol","name","marketCap","price"]
 	df_mod = df[colonnes]
-	afficher_message("Transformation des données Ok!", Fore.YELLOW)
+	afficher_message("Transformation des données Ok!")
 	return df_mod
 	
-def Load(df_arg):
+def Load(df_arg,Fore):
 	#Sauvegarder le résultat dans un fichier csv
 	df_arg.to_csv('crypto_coins.csv')
-	afficher_message("Chargement des données ok dans le fichier CSV!", Fore.YELLOW)
+	afficher_message("Chargement des données ok dans le fichier CSV!")
 
 def main(url):
-	data = Extract(url)
-	data_frame = Transform(data)
-	Load(data_frame)
+	data = Extract(url,Fore)
+	data_frame = Transform(data,Fore)
+	Load(data_frame,Fore)
 	
-if __name__ == "__main__ " :
+if __name__ == "__main__" :
+	afficher_message("Démarrage du script de récupération des données cryptomonnaies...", Fore.GREEN)
 	url = "https://coinranking1.p.rapidapi.com/coins"
 	main(url)
 	afficher_message("Fin du programme...", Fore.GREEN)
