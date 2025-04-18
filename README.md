@@ -13,3 +13,5 @@ git clone https://github.com/apoukan/rapidAPI.git
 cd rapidAPI
 pip install -r requirements.txt
 python main.py
+#or
+chmod a+x main.py && ./main.py
