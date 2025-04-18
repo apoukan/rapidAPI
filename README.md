@@ -8,10 +8,8 @@ Ce script Python permet de récupérer les 60 principales cryptomonnaies classé
 - Créez un fichier nommé api.txt dans le même dossier que le script Python, et collez-y uniquement votre clé API.
 
 ##  Installation
-
+```bash
 git clone https://github.com/apoukan/rapidAPI.git
 cd rapidAPI
 pip install -r requirements.txt
-
-##  Utilisation
 python main.py
